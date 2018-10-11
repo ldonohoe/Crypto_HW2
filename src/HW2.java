@@ -51,33 +51,7 @@ public class HW2 {
 	//Generates the private keys for Alice and Bob using 
 	// the Computational Diffie-Helman key exchange protocol
 	private static void gen_key() {
-		int shared = 23;
-		int base = 5;
-		
-		int aSecret = 3;
-		int kdcSecret = 4;
-		
-		int mod = (int)Math.pow(base, aSecret) % shared;
-		int mod2 = (int)Math.pow(base, kdcSecret) % shared;
-		
-		assert((int)Math.pow(mod2, aSecret)%shared == (int)Math.pow(mod2,  kdcSecret)%shared);
-		
-		Ka = Encrypt.binToString((int)Math.pow(mod2, aSecret)%shared, 10);
-		
-		//Now repeat for B
-		shared = 37;
-		base = 7;
-		
-		int bSecret = 5;
-		kdcSecret = 6;
-		
-		mod = (int)Math.pow(base, bSecret) % shared;
-		mod2 = (int)Math.pow(base, kdcSecret) % shared;
-		
-		assert((int)Math.pow(mod2, bSecret)%shared == (int)Math.pow(mod2,  kdcSecret)%shared);
-		
-		Kb = Encrypt.binToString((int)Math.pow(mod2, bSecret)%shared, 10);
-			
+		//SCRAPPED	
 	}
 	
 	public static void main(String[] args) {
