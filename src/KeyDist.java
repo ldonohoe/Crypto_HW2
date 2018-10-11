@@ -26,8 +26,9 @@ public class KeyDist {
     { 
     	//Start server for sending data
     	// Send to A first, then B, then distribute Ks
-    	ServerSocket KDC = new ServerSocket(0);
+    	ServerSocket KDC = new ServerSocket(9877);
     	Socket KtoA = KDC.accept();
+    	System.out.println("A Connected");
     	
     	PrintWriter send = new PrintWriter(KtoA.getOutputStream(), true);
 		BufferedReader recieve = new BufferedReader(new InputStreamReader(KtoA.getInputStream()));
@@ -35,14 +36,18 @@ public class KeyDist {
 		//Compute the shared key with A, just as is done in A
     	int b = (int)Math.random() * P;
     	
+    	System.out.println("Sending initial");
     	int baseToB = (int)Math.pow(BASE, b) % P;
     	send.print(baseToB);
     	
+    	System.out.println("Recieve 1");
     	//A sends back their result
     	int baseToA = recieve.read();
     	int baseToAB = (int)Math.pow(baseToA, b) % P;
     	
+    	System.out.println("Sending 2");
     	send.print(baseToAB);
+    	System.out.println("Recieving 2");
     	int baseToAB2 = recieve.read();
     	
     	//Check that both results match
@@ -56,6 +61,8 @@ public class KeyDist {
     	
     	//Repeat the exact same process with B...
     	Socket KtoB = KDC.accept();
+    	System.out.println("B Connected");
+
     	
     	PrintWriter sendB = new PrintWriter(KtoB.getOutputStream(), true);
 		BufferedReader recieveB = new BufferedReader(new InputStreamReader(KtoB.getInputStream()));

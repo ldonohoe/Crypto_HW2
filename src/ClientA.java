@@ -1,5 +1,8 @@
-import java.net.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class ClientA {
 	public static String A;
@@ -25,10 +28,14 @@ public class ClientA {
 		int a = (int)(Math.random() * P);
 		int baseToA = (int)(Math.pow(BASE,  a)) % P;
 		
+		System.out.println("Sending 1");
 		//Send result to kdc, and recieve their result
 		output.print(baseToA);
+		System.out.println("Sent");
+		System.out.println("Reading 1");
 		int baseToB = input.read();
-		
+		System.out.println("Read");
+
 		//Now calculate the private shared key
 		int baseToAB = (int)Math.pow(baseToB, a) % P;
 		output.print(baseToAB);

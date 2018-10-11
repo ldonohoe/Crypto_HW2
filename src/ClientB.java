@@ -45,7 +45,7 @@ public class ClientB {
 				
 				//Start a server to wait for A to send the key packet
 				
-				ServerSocket B = new ServerSocket(0);
+				ServerSocket B = new ServerSocket(9877);
 				Socket A = B.accept();
 				
 				PrintWriter send = new PrintWriter(A.getOutputStream(), true);
