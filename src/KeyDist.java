@@ -85,9 +85,20 @@ public class KeyDist {
     	//Now that the keys have been shared, we can begin
     	//	Doing some key distribution
     	
+    	Socket KeyToA = KDC.accept();
+    	PrintWriter sendA = new PrintWriter(KeyToA.getOutputStream(), true);
+    	BufferedReader recieveA = new BufferedReader(new InputStreamReader(KeyToA.getInputStream()));
     	
+    	String packet = recieveA.readLine();
+    	String packetA = HW2.key_dist(packet, KaString, KbString);
     	
-    	System.out.println("Key Boi");
+    	//Send encrypted packet of key stuff to A, and be done
+    	sendA.print(packetA);
+    	
+    	KeyToA.close();
+    	KDC.close();
+    	
+    	System.out.println("Keys successfully distributed!");
     } 
 }
 

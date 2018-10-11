@@ -5,8 +5,8 @@
  */
 public class HW2 {
 
-	private static String Ka;
-	private static String Kb;
+	//private static String Ka;
+	//private static String Kb;
 	
 	public static String[] parseString(String inPack) {
 		String A, B, Na;
@@ -30,8 +30,7 @@ public class HW2 {
 	//	as well as the identity of the second client
 	//Packet A is encrypted with Client As public key, and contains As Nonce, the session key, 
 	//	the identity of the other client, and Packet B
-	public static String key_dist(String inPack) {
-		gen_key();
+	public static String key_dist(String inPack, String Ka, String Kb) {
 		String A = null, B=null;
 		int Na=0;
 		String[] newPack = parseString(inPack);
