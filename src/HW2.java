@@ -37,12 +37,12 @@ public class HW2 {
 		A = newPack[0];
 		B = newPack[1];
 		Na = Integer.parseInt(newPack[2]);
+		String time = java.time.LocalTime.now().toString();
 		int key = (int)(Math.random() * 10000) % 1024;
 		String keyText = Encrypt.binToString(key, 10);
-		String packetB = keyText + "||" + A;
+		String packetB = keyText + "||" + A + "||" + time;
 		packetB = Encrypt.encrypt_file(packetB, Kb);
-		
-		String packetA = keyText + "||" + B + "||" + Na + "||" + packetB;
+		String packetA = keyText + "||" + B + "||" + time + "||" + packetB;
 		packetA = Encrypt.encrypt_file(packetA, Ka);
 		return packetA;
 	}

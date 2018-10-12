@@ -28,13 +28,13 @@ public class ClientA {
 		int a = (int)(Math.random() * P);
 		int baseToA = (int)(Math.pow(BASE,  a)) % P;
 		
-		System.out.println("Sending 1");
+		//System.out.println("Sending 1");
 		//Send result to kdc, and recieve their result
 		output.print(baseToA);
-		System.out.println("Sent");
-		System.out.println("Reading 1");
+		//System.out.println("Sent");
+		//System.out.println("Reading 1");
 		int baseToB = input.read();
-		System.out.println("Read");
+		//System.out.println("Read");
 
 		//Now calculate the private shared key
 		int baseToAB = (int)Math.pow(baseToB, a) % P;
@@ -86,11 +86,11 @@ public class ClientA {
 		String bID = decryptKey.substring(0, i); // ||Na...
 		decryptKey = decryptKey.substring(i+2); // Na...
 		i = decryptKey.indexOf("||");
-		String NonceA = decryptKey.substring(0, i);
+		String timeStamp = decryptKey.substring(0, i);
 		decryptKey = decryptKey.substring(i+2); // E[Ks||IDa\
 		
 		//Error Checking if the packet is correctly decrypted
-		System.out.println("Ks is " + Ks + "\n bID is " + bID + "\n Na is " + NonceA);
+		System.out.println("Ks is " + Ks + "\n bID is " + bID + "\n time is " + timeStamp);
 		
 		//Remaining string is to send to B
 		Socket AtoB = new Socket("127.0.0.1", port);

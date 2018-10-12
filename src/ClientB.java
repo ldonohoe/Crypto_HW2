@@ -59,9 +59,12 @@ public class ClientB {
 				int i = key.indexOf("||");
 				String Ks = key.substring(0,i);
 				key = key.substring(i+2);
-				//Remainder of key should be IDa
+				i = key.indexOf("||");
+				String IDa = key.substring(0, i);
+				key = key.substring(i);
+				//Remainder of key should be timeStamp
 				
-				System.out.println("Ks is " + Ks + "\n IDa is " + key);
+				System.out.println("Ks is " + Ks + "\n IDa is " + IDa + "\n time is " + key);
 				
 				//Finally, Send the session key back to A to confirm
 				send.print(Ks);
