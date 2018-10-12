@@ -36,18 +36,18 @@ public class KeyDist {
 		//Compute the shared key with A, just as is done in A
     	int b = (int)Math.random() * P;
     	
-    	System.out.println("Sending initial");
+    	//System.out.println("Sending initial");
     	int baseToB = (int)Math.pow(BASE, b) % P;
     	send.print(baseToB);
     	
-    	System.out.println("Recieve 1");
+    	//System.out.println("Recieve 1");
     	//A sends back their result
     	int baseToA = recieve.read();
     	int baseToAB = (int)Math.pow(baseToA, b) % P;
     	
-    	System.out.println("Sending 2");
+    	//System.out.println("Sending 2");
     	send.print(baseToAB);
-    	System.out.println("Recieving 2");
+    	//System.out.println("Recieving 2");
     	int baseToAB2 = recieve.read();
     	
     	//Check that both results match
