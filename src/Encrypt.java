@@ -363,7 +363,7 @@ public class Encrypt {
 			cipherText+=c;
 
 		}
-		return cipherText;
+		return fileIn;
 	}
 	
 	/**
@@ -398,14 +398,14 @@ public class Encrypt {
 			plainText+=c;
 
 		}
-		return plainText;
+		return fileIn;
 	}
 	
 	public static void main(String[] args) {
 
 		// Name of the file to be encrypted
 		// TODO? Change to console input or other input than hardcoded?
-		String file = "/test.txt";
+		/*String file = "/test.txt";
 
 		//Create the path to the directory with the file
 		String dir = System.getProperty("user.dir");
@@ -425,23 +425,25 @@ public class Encrypt {
 			data = new String(Files.readAllBytes(Paths.get(filePath)));
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		} */
+
+		String data = "this is text || more text";
 		
 	    
 		// Input key for encryption/decryption
 		
 		System.out.println("The plain is " + data);
 		
-		String cipherText = encrypt_file(data, "1010010101");
+		String cipherText = encrypt_file(data, "1");
 		
 		System.out.println("The Cipher is : " + cipherText);
 		
 		//TODO Send encrypted file on to recipient
 		
 		//Checking if the file was correctly encrypted and decrypted
-		String cipherBinary = convert_to_binary(cipherText);
+		//String cipherBinary = convert_to_binary(cipherText);
 		
-		String plainText = decrypt_file(cipherBinary, "1010010101");
+		String plainText = decrypt_file(cipherText, "1");
 
 		System.out.println("The plaintext is : " + plainText);
 

@@ -1,8 +1,5 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class ClientA {
 	public static String A;
@@ -13,32 +10,36 @@ public class ClientA {
 	public static String pack;
 	final static int P = 997;
 	final static int BASE = 9;
-	static int port = 9877;
+	static int keyPort = 9877;
+	static int bPort = 9880;
+	static int keyPort2 = 9879;
 	static int Ka;
 	
 
-	public static void main(String args[]) throws IOException
+	public static void main(String[] args) throws IOException
 	{
 		
 		//Begin with communications with KDH to obtain a's private key
-		Socket AtoK = new Socket("127.0.0.1", port);
-		PrintWriter output = new PrintWriter(AtoK.getOutputStream(), true);
-		BufferedReader input = new BufferedReader(new InputStreamReader(AtoK.getInputStream()));
-		
+		Socket AtoK = new Socket("127.0.0.1", keyPort);
+		DataOutputStream output = new DataOutputStream(AtoK.getOutputStream());
+		DataInputStream input = new DataInputStream(new BufferedInputStream(AtoK.getInputStream()));
+		 
 		int a = (int)(Math.random() * P);
 		int baseToA = (int)(Math.pow(BASE,  a)) % P;
 		
-		//System.out.println("Sending 1");
+		System.out.println("Sending 1");
 		//Send result to kdc, and recieve their result
-		output.print(baseToA);
-		//System.out.println("Sent");
-		//System.out.println("Reading 1");
-		int baseToB = input.read();
-		//System.out.println("Read");
+
+		output.write(baseToA);
+		System.out.println("Sent");
+
+		System.out.println("Reading 1");
+		int baseToB = input.read();// = input.read();
+		System.out.println("Read");
 
 		//Now calculate the private shared key
 		int baseToAB = (int)Math.pow(baseToB, a) % P;
-		output.print(baseToAB);
+		output.write(baseToAB);
 		
 		int kdcResult = input.read();
 		
@@ -63,21 +64,28 @@ public class ClientA {
 		A = Integer.toBinaryString(idA);
 		B = Integer.toBinaryString(idB);
 		Na = Integer.toBinaryString(N1);
-		
-		Socket AtoK2 = new Socket("127.0.0.1", port);
-		PrintWriter output2 = new PrintWriter(AtoK2.getOutputStream(), true);
-		BufferedReader input2 = new BufferedReader(new InputStreamReader(AtoK2.getInputStream()));
+		try{
+			Thread.sleep(1000);
+		}
+		catch(Exception e){
+
+		}
+		Socket AtoK2 = new Socket("127.0.0.1", keyPort2);
+		DataOutputStream output2 = new DataOutputStream(AtoK2.getOutputStream());
+		DataInputStream input2 = new DataInputStream(new BufferedInputStream(AtoK2.getInputStream()));
 			
 		String sendPacket =  A + "||" + B + "||" + Na;
-		output2.print(sendPacket);
+		output2.writeUTF(sendPacket);
 		
-		String keyPacket = input2.readLine();
+		String keyPacket = input2.readUTF();
 		
 		//Now that we have this packet, we can begin communicating with Bob.
 		// After breaking it apart and decrypting it of course
 		//E[Ks|||IDb||N1||E[Ks||IDa]]
+		System.out.println(KaString);
 		String decryptKey = Encrypt.decrypt_file(keyPacket, KaString);
 		
+		System.out.println(decryptKey);
 		//Parse the decrypted text into the individual pieces of data
 		int i = decryptKey.indexOf("||"); // Ks|||IDb||N1||E[Ks||IDa]
 		String Ks = decryptKey.substring(0, i); // ||IDb||Na||... 
@@ -93,13 +101,13 @@ public class ClientA {
 		System.out.println("Ks is " + Ks + "\n bID is " + bID + "\n time is " + timeStamp);
 		
 		//Remaining string is to send to B
-		Socket AtoB = new Socket("127.0.0.1", port);
-		PrintWriter toBob = new PrintWriter(AtoB.getOutputStream(), true);
-		BufferedReader fromBob = new BufferedReader(new InputStreamReader(AtoB.getInputStream()));
+		Socket AtoB = new Socket("127.0.0.1", bPort);
+		DataOutputStream toBob = new DataOutputStream(AtoB.getOutputStream());
+		DataInputStream fromBob = new DataInputStream(new BufferedInputStream(AtoB.getInputStream()));
 		
-		toBob.print(decryptKey);
+		toBob.writeUTF(decryptKey);
 		
-		String bobKey = fromBob.readLine();
+		String bobKey = fromBob.readUTF();
 		
 		if (bobKey.equals(Ks)) {
 			System.out.println("Securely distributed key, can now communicate with securenessity");

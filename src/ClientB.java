@@ -1,9 +1,5 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class ClientB {
 	public String A, B, Na, Nb;
@@ -11,26 +7,26 @@ public class ClientB {
 	public static String pack;
 	final static int P = 997;
 	final static int BASE = 9;
-	static int port = 9877;
+	static int keyPort = 9878;
+	static int aPort = 9880;
 	static int Kb;
 	
 	public static void main(String[] args) throws IOException
 	{
 		//Begin with communications with KDH to obtain a's private key
-				Socket BtoK = new Socket("127.0.0.1", port);
-				PrintWriter output = new PrintWriter(BtoK.getOutputStream(), true);
-				BufferedReader input = new BufferedReader(new InputStreamReader(BtoK.getInputStream()));
-				
+				Socket BtoK = new Socket("127.0.0.1", keyPort);
+				DataOutputStream output = new DataOutputStream(BtoK.getOutputStream());
+				DataInputStream input = new DataInputStream(new BufferedInputStream(BtoK.getInputStream()));
 				int a = (int)(Math.random() * 997);
 				int baseToA = (int)(Math.pow(BASE,  a)) % P;
 				
 				//Send result to kdc, and recieve their result
-				output.print(baseToA);
+				output.write(baseToA);
 				int baseToB = input.read();
 				
 				//Now calculate the private shared key
 				int baseToAB = (int)Math.pow(baseToB, a) % P;
-				output.print(baseToAB);
+				output.write(baseToAB);
 				
 				int kdcResult = input.read();
 				
@@ -45,14 +41,13 @@ public class ClientB {
 				
 				//Start a server to wait for A to send the key packet
 				
-				ServerSocket B = new ServerSocket(9877);
+				ServerSocket B = new ServerSocket(aPort);
 				Socket A = B.accept();
 				
-				PrintWriter send = new PrintWriter(A.getOutputStream(), true);
-				BufferedReader recieve = new BufferedReader(new InputStreamReader(A.getInputStream()));
-				
+				DataOutputStream send = new DataOutputStream(A.getOutputStream());
+				DataInputStream recieve = new DataInputStream(new BufferedInputStream(A.getInputStream()));
 				//Recieve the key packet from Alice
-				String bPacket = recieve.readLine();
+				String bPacket = recieve.readUTF();
 				String key = Encrypt.decrypt_file(bPacket, KbString);
 				
 				//Parse out data from key
@@ -67,7 +62,7 @@ public class ClientB {
 				System.out.println("Ks is " + Ks + "\n IDa is " + IDa + "\n time is " + key);
 				
 				//Finally, Send the session key back to A to confirm
-				send.print(Ks);
+				send.writeUTF(Ks);
 				
 	}
 

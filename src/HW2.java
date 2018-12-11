@@ -55,20 +55,17 @@ public class HW2 {
 	
 	public static void main(String[] args) {
 		//This will be timestamp
-		System.out.println(java.time.LocalTime.now().toString());
-		//Identity of Alice and Bob
-		String A = "Alice";
-		String B = "Bob";
-		
-		//Nonce for Alice and Bob respectively.
-		int Na = (int)(Math.random() * 10000) % 1024;
-		int Nb = (int)(Math.random() * 10000) % 1024;
-		
-		
-		
-		
-		
-		
-	}
+		ClientA a = new ClientA();
+		ClientB b = new ClientB();
+		KeyDist kdc = new KeyDist();
+		try {
+			kdc.main();
+			a.main();
+			b.main();
+		}
+		catch(Exception e) {
 
+		}
+
+	}
 }

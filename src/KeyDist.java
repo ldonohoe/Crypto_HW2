@@ -1,13 +1,5 @@
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class KeyDist {
 
@@ -19,35 +11,39 @@ public class KeyDist {
 	public static String pack;
 	final static int P = 997;
 	final static int BASE = 9;
-	static int port = 9877;
+	static int aPort = 9877;
+    static int bPort = 9878;
+    static int aPort2 = 9879;
 	static int Ka, Kb; 
     
-    public static void main(String args[]) throws IOException 
+    public static void main(String[] args) throws IOException 
     { 
     	//Start server for sending data
     	// Send to A first, then B, then distribute Ks
-    	ServerSocket KDC = new ServerSocket(9877);
-    	Socket KtoA = KDC.accept();
+    	ServerSocket KDCtoA = new ServerSocket(aPort);
+    	Socket KtoA = KDCtoA.accept();
     	System.out.println("A Connected");
     	
-    	PrintWriter send = new PrintWriter(KtoA.getOutputStream(), true);
-		BufferedReader recieve = new BufferedReader(new InputStreamReader(KtoA.getInputStream()));
+    	DataOutputStream send = new DataOutputStream(KtoA.getOutputStream());
+		DataInputStream recieve = new DataInputStream(new BufferedInputStream(KtoA.getInputStream()));
 		
 		//Compute the shared key with A, just as is done in A
     	int b = (int)Math.random() * P;
     	
-    	//System.out.println("Sending initial");
+    	System.out.println("Sending initial");
     	int baseToB = (int)Math.pow(BASE, b) % P;
-    	send.print(baseToB);
+    	send.write(baseToB);
     	
-    	//System.out.println("Recieve 1");
+    	System.out.println("Recieve 1");
     	//A sends back their result
+         
     	int baseToA = recieve.read();
     	int baseToAB = (int)Math.pow(baseToA, b) % P;
+        System.out.println("Recieved " + baseToA);
     	
-    	//System.out.println("Sending 2");
-    	send.print(baseToAB);
-    	//System.out.println("Recieving 2");
+    	System.out.println("Sending 2");
+    	send.write(baseToAB);
+    	System.out.println("Recieving 2");
     	int baseToAB2 = recieve.read();
     	
     	//Check that both results match
@@ -56,29 +52,31 @@ public class KeyDist {
     		Ka = baseToAB;
     		KaString = Integer.toBinaryString(Ka);
     	}
+        System.out.println(KaString);
     	
     	KtoA.close();
+        KDCtoA.close();
     	
     	//Repeat the exact same process with B...
-    	Socket KtoB = KDC.accept();
+        ServerSocket KDCtoB = new ServerSocket(bPort);
+    	Socket KtoB = KDCtoB.accept();
     	System.out.println("B Connected");
 
     	
-    	PrintWriter sendB = new PrintWriter(KtoB.getOutputStream(), true);
-		BufferedReader recieveB = new BufferedReader(new InputStreamReader(KtoB.getInputStream()));
-		
+    	DataOutputStream sendB = new DataOutputStream(KtoB.getOutputStream());
+        DataInputStream receiveB = new DataInputStream(new BufferedInputStream(KtoB.getInputStream()));
 		//Compute the shared key with A, just as is done in A
     	int c = (int)Math.random() * P;
     	
     	int baseToC = (int)Math.pow(BASE, c) % P;
-    	sendB.print(baseToC);
+    	sendB.write(baseToC);
     	
     	//A sends back their result
-    	int baseToD = recieveB.read();
+    	int baseToD = receiveB.read();
     	int baseToCD = (int)Math.pow(baseToD, c) % P;
     	
-    	sendB.print(baseToCD);
-    	int baseToCD2 = recieveB.read();
+    	sendB.write(baseToCD);
+    	int baseToCD2 = receiveB.read();
     	
     	//Check that both results match
     	if (baseToCD == baseToCD2) {
@@ -88,22 +86,25 @@ public class KeyDist {
     	}
     	
     	KtoB.close();
-    	
+    	KDCtoB.close();
+
     	//Now that the keys have been shared, we can begin
     	//	Doing some key distribution
     	
-    	Socket KeyToA = KDC.accept();
-    	PrintWriter sendA = new PrintWriter(KeyToA.getOutputStream(), true);
-    	BufferedReader recieveA = new BufferedReader(new InputStreamReader(KeyToA.getInputStream()));
-    	
-    	String packet = recieveA.readLine();
+        ServerSocket KDCtoA2 = new ServerSocket(aPort2);
+    	Socket KeyToA = KDCtoA2.accept();
+        System.out.println("Connected to A");
+    	DataOutputStream sendA = new DataOutputStream(KeyToA.getOutputStream());
+        DataInputStream recieveA = new DataInputStream(new BufferedInputStream(KeyToA.getInputStream()));
+    	String packet = recieveA.readUTF();
     	String packetA = HW2.key_dist(packet, KaString, KbString);
     	
     	//Send encrypted packet of key stuff to A, and be done
-    	sendA.print(packetA);
-    	
+    	sendA.writeUTF(packetA);
+        System.out.println("Sent all to A");
+
     	KeyToA.close();
-    	KDC.close();
+    	KDCtoA2.close();
     	
     	System.out.println("Keys successfully distributed!");
     } 
