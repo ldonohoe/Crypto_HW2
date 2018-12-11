@@ -14,3 +14,5 @@ Once the KDC has sent back to Client A the encrypted packet with the key, it can
 
 Preventing Replay Attacks
 To defend from replay attacks, an extra piece of data is added to the packet sent by the KDC. This is a timestamp telling when this packet was created and sent. Both parties will recieve a copy of this, and can ensure that it matches. If this timestamp were to be compromised, or the packet were to be intercepted, and resent to the original destination, this timestamp would tell if the key was compromised or not. 
+
+To run this code, first run KeyDist.java, followed by ClientA.java and ClientB.java in relatively quick succession. This will perform the key distribution to both A and B.
